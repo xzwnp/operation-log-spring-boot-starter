@@ -39,9 +39,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <!--  解决线程池环境下,InheritThreadLocal会丢失父容器数据的问题      -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
             <version>2.14.2</version>
         </dependency>
-
 
     </dependencies>
 

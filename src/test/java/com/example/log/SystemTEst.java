@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StopWatch;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * com.example.log
  *
@@ -16,20 +20,23 @@ import org.springframework.util.StopWatch;
  */
 @SpringBootTest(classes = OperationLogSpringBootStarterApplication.class)
 public class SystemTEst {
-	@Autowired
-	OrderServiceImpl orderService;
+    @Autowired
+    OrderServiceImpl orderService;
 
-	@Test
-	void test1() {
-		StopWatch sw = new StopWatch();
-		for (int i = 0; i < 5; i++) {
-			sw.start();
-			OrderRequest orderRequest = new OrderRequest();
-			orderRequest.setUserId("123");
-			orderService.creteOrder(orderRequest);
-			sw.stop();
-			System.out.println(sw.getLastTaskTimeMillis() + "ms");
-		}
+    @Test
+    void test1() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(5);
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        for (int i = 0; i < 5; i++) {
+            executorService.execute(() -> {
+                OrderRequest orderRequest = new OrderRequest();
+                orderRequest.setUserId("123");
+                orderService.creteOrder(orderRequest);
+                latch.countDown();
+            });
 
-	}
+        }
+        latch.await();
+    }
+
 }
